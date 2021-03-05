@@ -37,7 +37,7 @@ public class ConcurrentPool implements IPool {
     /**
      * 最大活跃连接数
      */
-    private final int MAX_ACTIVE = 100;
+    private final int MAX_ACTIVE = 10;
 
     private final ConcurrentLinkedQueue<Connection> idleConnections;
 

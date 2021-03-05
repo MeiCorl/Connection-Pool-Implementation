@@ -37,7 +37,7 @@ public class SyncPool implements IPool {
     /**
      * 最大活跃连接数
      */
-    private final int MAX_ACTIVE = 100;
+    private final int MAX_ACTIVE = 10;
 
     private final LinkedList<Connection> idleConnections;
 
@@ -107,6 +107,8 @@ public class SyncPool implements IPool {
                         connection = DriverManager.getConnection(jdbcUrl, userName, password);
                     }
                     activeConnections.addLast(connection);
+                    if(connection == null)
+                        System.out.println(Thread.currentThread().getName() + " null 1");
                     return connection;
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -130,16 +132,21 @@ public class SyncPool implements IPool {
         }
 
         LockSupport.parkNanos((long) (3 * Math.pow(10, 9)));  // 当前线程沉睡等待，超时时间3s
-        try {
-            Connection connection = bufferConnections.poll();
-            /* 链接长时间无操作导致断开，重连 */
-            if (connection != null && !connection.isValid(2000)) {
-                connection = DriverManager.getConnection(jdbcUrl, userName, password);
+
+        synchronized (this) {
+            try {
+                Connection connection = bufferConnections.poll();
+                /* 链接长时间无操作导致断开，重连 */
+                if (connection != null && !connection.isValid(2000)) {
+                    connection = DriverManager.getConnection(jdbcUrl, userName, password);
+                }
+                if (connection == null)
+                    System.out.println(Thread.currentThread().getName() + " null 2");
+                return connection;
+            } catch (SQLException | NoSuchElementException e) {
+                e.printStackTrace();
+                return null;
             }
-            return connection;
-        } catch (SQLException | NoSuchElementException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 

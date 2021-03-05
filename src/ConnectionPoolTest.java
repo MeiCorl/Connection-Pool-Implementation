@@ -34,8 +34,8 @@ public class ConnectionPoolTest implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        int threadNum = 500;
-        pool = PoolFactory.getInstance(jdbcDriver, jdbcUrl, userName, password, 100);
+        int threadNum = 300;
+        pool = PoolFactory.getInstance(jdbcDriver, jdbcUrl, userName, password, 10);
 
         long start = System.currentTimeMillis();
         ArrayList<Thread> l = new ArrayList<>(100);

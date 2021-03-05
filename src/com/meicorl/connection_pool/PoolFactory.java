@@ -10,7 +10,7 @@ public class PoolFactory {
         if (!poolMap.containsKey(key)) {
             synchronized (PoolFactory.class) {
                 if (!poolMap.containsKey(key)) {
-                    IPool pool = new SyncPool(jdbcDriver, jdbcUrl, userName, password, size);
+                    IPool pool = new ConcurrentPool(jdbcDriver, jdbcUrl, userName, password, size);
                     poolMap.put(key, pool);
                 }
             }
